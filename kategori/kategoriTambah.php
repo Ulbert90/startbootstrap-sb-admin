@@ -7,24 +7,28 @@
             <div class="col-md-12">
                 <form method="post">
                     <?php
+                        if (isset($_POST['submit'])) {
+                            $namaKategori = $_POST['namaKategori'];
 
-                        if(isset($_POST['submit'])){
-                            $kategori = $_POST['namaKategori'];
-                            $query = mysqli_query($koneksi, "INSERT INTO kategoriBuku(namaKategori) VALUES('$kategori')");
+                            // Validate if category name is not empty
+                            if (!empty($namaKategori)) {
+                                // Prepare SQL statement to prevent SQL injection
+                                $stmt = $koneksi->prepare("INSERT INTO kategori (kategori) VALUES (?)");
+                                $stmt->bind_param("s", $namaKategori);
 
-                            if($query){
-                                echo '<script>alert("Data berhasil disimpan")</script>';
-                            }else{
-                                echo "<script>alert('Gagal menyimpan')</script>";
-                            }
+                                // Execute the statement
+                                if ($stmt->execute()) {
+                                    echo "<div class='alert alert-success'>Berhasil di tambahkan</div> ";
+                                    // Optionally, redirect to a success page or list of categories
+                                } else {
+                                    echo "Error: " . $stmt->error;
+                                }
+                            } 
                         }
-
-                        // Tutup koneksi
-                        mysqli_close($koneksi);
                     ?>
                     <div class="mb-3">
-                        <label for="namaKategori" class="form-label">Nama Kategori</label>
-                        <input type="text" class="form-control" id="namaKategori" name="namaKategori"
+                        <label for="kategori" class="form-label">Nama Kategori</label>
+                        <input type="text" class="form-control" id="kategori" name="namaKategori"
                             placeholder="Masukkan Kategori Buku..." required>
                     </div>
                     <div class="d-flex mt-4 mx-3 justify-content-center">
@@ -39,4 +43,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>

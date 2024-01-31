@@ -1,92 +1,76 @@
-<?php
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-
-    if (isset($_POST['submit'])) {
-        $kategoriID = $_POST['kategoriID'];
-        $judul = $_POST['judul'];
-        $penulis = $_POST['penulis'];
-        $penerbit = $_POST['penerbit'];
-        $tahunTerbit = $_POST['tahunTerbit'];
-
-        $sqlBuku = "INSERT INTO buku (judul, penulis, penerbit, tahunTerbit) VALUES (?, ?, ?, ?)";
-        $stmtBuku = mysqli_prepare($koneksi, $sqlBuku);
-        mysqli_stmt_bind_param($stmtBuku, "ssss", $judul, $penulis, $penerbit, $tahunTerbit);
-        $queryBuku = mysqli_stmt_execute($stmtBuku);
-        mysqli_stmt_close($stmtBuku);
-        if ($queryBuku) {
-            $bukuID = mysqli_insert_id($koneksi);
-
-            $sqlRelasi = "INSERT INTO kategoriBuku_relasi (bukuID, kategoriID) VALUES ('$bukuID', '$kategoriID')";
-            $queryRelasi = mysqli_query($koneksi, $sqlRelasi);
-
-            if ($queryRelasi) {
-                echo '<script>
-                        alert("Data berhasil disimpan");
-                        window.location.href = "?page=buku/buku";
-                    </script>';
-            } else {
-                echo '<script>
-                        alert("Gagal menyimpan relasi: ' . mysqli_error($koneksi) . '");
-                    </script>';
-            }
-        }
-    }
-
-    $query = mysqli_query($koneksi, "SELECT * FROM kategoriBuku_relasi WHERE kategoriBukuID=$id");
-    $data = mysqli_fetch_array($query);
-?>
-
 <div class="card mt-4">
     <div class="card-title text-center">
-        <h1 class="mt-3 border-bottom">Edit Data Buku</h1>
+        <h1 class="mt-3 border-bottom">Tambah Data Buku</h1>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
                 <form method="post">
+                    <?php
+                    $id = $_GET['id'];
+                        if (isset($_POST['submit'])) {
+                            $KategoriID = $_POST['kategoriID'];
+                            $judul = $_POST['judul'];
+                            $penulis = $_POST['penulis'];
+                            $penerbit = $_POST['penerbit'];
+                            $tahunTerbit = $_POST['tahunTerbit'];
+                            $deskripsi = $_POST['deskripsi'];
+                            $query = mysqli_query($koneksi, "UPDATE buku SET KategoriID = '$KategoriID', judul = '$judul', penulis = '$penulis', penerbit = '$penerbit', tahunTerbit = '$tahunTerbit', deskripsi = '$deskripsi' WHERE bukuID = $id");
+
+                                if ($query) {
+                                    echo '<script>alert("Tambah data berhasil");</script>';
+                                    header("location: buku/buku");
+                                } else {
+                                    echo '<script>alert("Tambah data gagal: ' . mysqli_error($koneksi) . '");</script>';
+                                }
+                            }
+                        
+                            $query = mysqli_query($koneksi, "SELECT*FROM buku WHERE bukuID=$id");
+                            $data = mysqli_fetch_array($query);
+                        
+                        ?>
                     <div class="mb-3">
                         <label for="namaKategori" class="form-label">Kategori Buku</label>
-                        <select class="form-control" name="kategoriID" id="kategoriID" disabled>
+                        <select class="form-control" name="kategoriID" id="kategoriID">
                             <?php
-                                $query = mysqli_query($koneksi, "SELECT * FROM kategoriBuku");
+                                $query = mysqli_query($koneksi, "SELECT * FROM kategori");
                                 while ($kategori = mysqli_fetch_array($query)) {
                                 ?>
                             <option
                                 <?php if (isset($data['kategoriID']) && $kategori['kategoriID'] == $data['kategoriID']) echo 'selected'; ?>
                                 value="<?php echo $kategori['kategoriID']; ?>">
-                                <?php echo $kategori['namaKategori']; ?>
+                                <?php echo $kategori['kategori']; ?>
                             </option>
                             <?php
                                 }
                                 ?>
                         </select>
+
                     </div>
-
-                    <div class="mb-3">
+                    <div class=" mb-3">
                         <label for="judul" class="form-label">Judul Buku</label>
-                        <input type="text" value="<?php echo isset($data['judul']) ? $data['judul'] : ''; ?>"
-                            class="form-control" id="judul" name="judul" required>
-
+                        <input type="text" class="form-control" id="judul" value="<?php echo $data['judul']; ?> "
+                            name="judul" required>
                     </div>
                     <div class="mb-3">
                         <label for="penulis" class="form-label">Penulis</label>
-                        <input type="text" value="<?php echo isset($data['penulis']) ? $data['penulis'] : ''; ?>"
-                            class="form-control" id="penulis" name="penulis" required>
-
+                        <input type="text" class="form-control" id="penulis" value="<?php echo $data['penulis']; ?>"
+                            name="penulis" required>
                     </div>
                     <div class="mb-3">
                         <label for="penerbit" class="form-label">Penerbit</label>
-                        <input type="text" value="<?php echo isset($data['penerbit']) ? $data['penerbit'] : ''; ?>"
-                            class="form-control" id="penerbit" name="penerbit" required>
-
+                        <input type="text" class="form-control" id="penerbit" value="<?php echo $data['penerbit']; ?>"
+                            name="penerbit" required>
                     </div>
                     <div class="mb-3">
                         <label for="tahunTerbit" class="form-label">Tahun Terbit</label>
-                        <input type="number"
-                            value="<?php echo isset($data['tahunTerbit']) ? $data['tahunTerbit'] : ''; ?>"
-                            class="form-control" id="tahunTerbit" name="tahunTerbit" required>
-
+                        <input type="number" class="form-control" id="tahunTerbit"
+                            value="<?php echo $data['tahunTerbit']; ?>" name="tahunTerbit" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deskripsi" class="form-label">deskripsi</label>
+                        <textarea type="text" class="form-control" id="deskripsi"
+                            name="deskripsi"><?php echo $data['deskripsi']; ?></textarea>
                     </div>
                     <div class="d-flex mt-4 mx-3 justify-content-center">
                         <button type="submit" class="btn btn-primary ml-3" name="submit"><i
@@ -100,6 +84,4 @@ if (isset($_GET['id'])) {
         </div>
     </div>
 </div>
-<?php
-}
-?>
+</div>

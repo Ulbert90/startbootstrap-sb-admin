@@ -56,23 +56,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
 
                         <div class="mb-3">
-                            <label for="ulasan" class="form-label">Isi Ulasan:</label>
-                            <textarea class="form-control" name="ulasan" required></textarea>
+                            <label for="tanggalPeminjaman" class="form-label">Tanggal peminjaman:</label>
+                            <input type="date" class="form-control" name="tanggalPeminjaman" required>
                         </div>
-
                         <div class="mb-3">
-                            <label for="rating" class="form-label">Rating:</label>
-                            <select class="form-select" name="rating">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </select>
+                            <label for="tanggalPengembalian" class="form-label">Tanggal Pengembalian:</label>
+                            <input type="date" class="form-control" name="tanggalPengembalian" required>
                         </div>
-
-
-
+                        <div class="mb-3">
+                            <label for="tanggalPengembalian" class="form-label">playby:</label>
+                            <input type="text" class="form-control" name="statusPengembalian" required>
+                        </div>
                         <div class="d-flex mt-4 mx-3 justify-content-center">
                             <button type="submit" class="btn btn-primary ml-3" name="submit"><i
                                     class="fas fa-floppy-disk"></i></button>&nbsp;

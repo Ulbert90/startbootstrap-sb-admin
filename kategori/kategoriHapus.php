@@ -5,7 +5,7 @@ $id = $_GET['id']; // Assuming you are passing the 'id' parameter through the UR
 // Use mysqli_real_escape_string to prevent SQL injection
 $id = mysqli_real_escape_string($koneksi, $id);
 
-$query = mysqli_query($koneksi, "DELETE FROM kategoriBuku WHERE kategoriID='$id'");
+$query = mysqli_query($koneksi, "DELETE FROM kategori WHERE kategoriID='$id'");
 ?>
 <script>
 alert("Data Kategori Buku Berhasil Dihapus!");

@@ -2,14 +2,14 @@
 require_once 'config.php';
 
 if (isset($_POST['register'])) {
-    $namaLengkap = $_POST['namaLengkap'];
+    $nama = $_POST['nama'];  // Assuming 'nama' is part of the registration form
     $username = $_POST['username'];
-    $email = $_POST['email'];
     $password = md5($_POST['password']);
     $alamat = $_POST['alamat'];
     $role = $_POST['role'];
 
-    $query = "INSERT INTO users (namaLengkap, username, password, email, alamat, role) VALUES ('$namaLengkap', '$username', '$password', '$email', '$alamat','$role')";
+    $query = "INSERT INTO users (role, nama, username, password, alamat) VALUES ('$role', '$nama', '$username', '$password', '$alamat')";
+    
     $result = mysqli_query($koneksi, $query);
 
     if ($result) {
@@ -19,6 +19,7 @@ if (isset($_POST['register'])) {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -59,8 +60,8 @@ body {
                         <!-- Login Form -->
                         <form method="post">
                             <div class="mb-3">
-                                <label for="namaLengkap" class="form-label">Nama Lengkap</label>
-                                <input type="text" class="form-control" id="namaLengkap" name="namaLengkap" required>
+                                <label for="nama" class="form-label">Nama Lengkap</label>
+                                <input type="text" class="form-control" id="nama" name="nama" required>
                             </div>
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
