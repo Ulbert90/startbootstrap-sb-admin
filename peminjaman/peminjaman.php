@@ -1,3 +1,12 @@
+<?php
+include_once 'config.php';
+
+if (!isset($_SESSION['users'])) {
+    header('Location: login.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,12 +18,14 @@
 
 <body>
     <div class="container">
-        <h1 class="my-4">Laporan Data Buku</h1>
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="my-4">Peminjaman</h1>
+        </div>
         <div class="card mt-4">
             <div class="card-header d-flex">
                 <div>
                     <i class="fas fa-floppy-disk me-1"></i>
-                    Laporan
+                    Pinjam Buku
                 </div>
             </div>
 
@@ -29,34 +40,68 @@
                                 <th>Tanggal Peminjaman</th>
                                 <th>Tanggal Pengembalian</th>
                                 <th>Status</th>
-                                <th width="14%">Aksi</th>
+                                <th width="10%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
                             $i = 1;
+                            $loggedInUserID = $_SESSION['users']['userID'];
+                            $loggedInUserRole = $_SESSION['users']['role'];
+
+                            // Adjusted query based on role and user ID
                             $query = mysqli_query($koneksi, "SELECT * FROM peminjaman 
-                                LEFT JOIN users AS user_peminjaman ON user_peminjaman.userID = peminjaman.userID 
                                 JOIN buku ON peminjaman.bukuID = buku.bukuID 
-                                JOIN users AS user_buku ON peminjaman.userID = user_buku.userID");  
-                                while ($data = mysqli_fetch_array($query)) {    
-                                ?>
+                                JOIN users ON peminjaman.userID = users.userID
+                                WHERE " . (($loggedInUserRole == 'admin') ? '1' : "peminjaman.userID = $loggedInUserID"));
+
+                            while ($data = mysqli_fetch_array($query)) {
+                            ?>
                             <tr>
                                 <td><?php echo $i++; ?></td>
-                                <td><?php echo $data['user_peminjaman.nama']; ?></td>
+                                <td><?php echo $data['nama']; ?></td>
                                 <td><?php echo $data['judul']; ?></td>
-                                <td><?php echo $data['tanggalPeminjaman']; ?></td>
-                                <td><?php echo $data['tanggalPengembalian']; ?></td>
-                                <td><?php echo $data['statusPeminjaman']; ?></td>
-                                <td class="d-grid gap-2 d-md-block">
+                                <td><?php echo date('d F Y', strtotime($data['tanggalPeminjaman'])); ?></td>
+                                <td><?php echo date('d F Y', strtotime($data['tanggalPengembalian'])); ?></td>
+
+                                <td
+                                    class="<?php echo ($data['statusPeminjaman'] == 'dipinjam') ? 'text-success' : (($data['statusPeminjaman'] == 'dikembalikan') ? 'text-primary' : ''); ?>">
+                                    <?php echo $data['statusPeminjaman']; ?></td>
+
+                                <td class="d-flex justify-content-between">
+                                    <?php
+                                    $isAdmin = ($loggedInUserRole == 'admin');
+                                    $isUser = ($loggedInUserID == $data['userID']);
+
+                                    if ($isAdmin || $isUser) {
+                                    ?>
                                     <a href="?page=peminjaman/peminjamanEdit&id=<?php echo $data['peminjamanID']; ?>"
-                                        data-toggle="modal" class="btn btn-warning text-white"><i
-                                            class="fa fa-pencil"></i></a>
-                                    <a onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');"
-                                        href="?page=peminjaman/peminjamanHapus&id=<?php echo $data['peminjamanID']; ?>"
-                                        data-toggle="modal" class="btn btn-danger justify-content-end">
-                                        <i class="fa fa-trash-can"></i>
+                                        data-toggle="modal" class="btn btn-info text-white" title="Edit Peminjaman">
+                                        <i class="fa-solid fa-rotate-left"></i>
                                     </a>
+                                    <?php
+                                    }
+
+                                    if (!$isAdmin && $isUser) {
+                                        ?>
+                                    <a href="?page=peminjaman/peminjamanHapus&id=<?php echo $data['peminjamanID']; ?>"
+                                        data-toggle="modal"
+                                        class="btn btn-danger text-white <?php echo ($data['statusPeminjaman'] != 'dikembalikan') ? 'disabled' : ''; ?>"
+                                        title="Kembalikan Buku">
+                                        <i class="fa-solid fa-delete-left"></i>
+                                    </a>
+                                    <?php
+                                    }
+
+                                    if ($isAdmin && $data['statusPeminjaman'] == 'dikembalikan') {
+                                        ?>
+                                    <a href="?page=peminjaman/peminjamanHapus&id=<?php echo $data['peminjamanID']; ?>"
+                                        data-toggle="modal" class="btn btn-danger text-white" title="Hapus Peminjaman">
+                                        <i class="fa-solid fa-delete-left"></i>
+                                    </a>
+                                    <?php
+                                    }
+                                    ?>
                                 </td>
                             </tr>
                             <?php
@@ -68,11 +113,10 @@
             </div>
         </div>
         <div class="d-grid mt-3">
-            <a href="?page=peminjaman/peminjamanTambah" class="btn btn-primary"><i class="fas fa-plus"></i>Tambah
-                Peminjam</a>
+            <a href="?page=peminjaman/peminjamanTambah" class="btn btn-success"><i class="fas fa-plus"></i> Pinjam
+                Buku</a>
         </div>
     </div>
-
 </body>
 
 </html>

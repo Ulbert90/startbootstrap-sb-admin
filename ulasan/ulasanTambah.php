@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_num_rows($checkResult) > 0) {
         // Combination already exists, handle accordingly (e.g., display an error message)
-        echo "Error: Ulasan for this user and book already exists!";
+        echo "<div class='alert alert-danger mt-3' role='alert'>Anda Sudah Mengulas Buku ini</div>";
     } else {
         // Perform database insert
         $insertQuery = "INSERT INTO ulasan (userID, bukuID, ulasan, rating) VALUES ('$userID', '$bukuID', '$ulasan', '$rating')";
@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <div class="card mt-4">
         <div class="card-title text-center">
-            <h1 class="mt-3 border-bottom">Tambah Data Buku</h1>
+            <h1 class="mt-3 border-bottom">Ulasan</h1>
         </div>
         <div class="card-body">
             <div class="row">

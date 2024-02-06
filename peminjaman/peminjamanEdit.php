@@ -1,34 +1,3 @@
-<?php
-                    include_once('/var/www/html/APD/config.php');
-
-                    if (!isset($_SESSION['users'])) {
-                        header("Location: ../login.php"); // Redirect to the login page if not logged in
-                        exit();
-                    }
-                    
-                    if (isset($_POST['submit'])) {
-                        $userID = $_SESSION['users']['userID'];
-                        $bukuID = $_POST['bukuID'];
-                        $tanggalPeminjaman = $_POST['tanggalPeminjaman'];
-                        $tanggalPengembalian = $_POST['tanggalPengembalian'];
-                        $statusPeminjaman = $_POST['statusPeminjaman'];
-                    
-                        // Use prepared statements to prevent SQL injection
-                        $insertQuery = "INSERT INTO peminjaman (userID, bukuID, tanggalPeminjaman, tanggalPengembalian, statusPeminjaman) VALUES (?, ?, ?, ?, ?)";
-                        $stmt = mysqli_prepare($koneksi, $insertQuery);
-                    
-                        mysqli_stmt_bind_param($stmt, "iisss", $userID, $bukuID, $tanggalPeminjaman, $tanggalPengembalian, $statusPeminjaman);
-                        $insertResult = mysqli_stmt_execute($stmt);
-                    
-                        if ($insertResult) {
-                            echo "<script>alert('Tambah data berhasil');</script>";
-                        } else {
-                            echo "<script>alert('Tambah data gagal: " . mysqli_error($koneksi) . "');</script>";
-                        }
-                    
-                        mysqli_stmt_close($stmt);
-                    }
-                    ?>
 <div class="card mt-4">
     <div class="card-title text-center">
         <h1 class="mt-3 border-bottom">Pinjam Buku</h1>
@@ -37,19 +6,40 @@
         <div class="row">
             <div class="col-md-12">
                 <form method="post">
+                    <?php
+                    $id = $_GET['id'];
+                        if (isset($_POST['submit'])) {
+                            $bukuID = $_POST['bukuID'];
+                            $userID = $_SESSION['users']['userID'];
+                            $tanggalPeminjaman = $_POST['tanggalPeminjaman'];
+                            $tanggalPengembalian = $_POST['tanggalPengembalian'];
+                            $statusPeminjaman = $_POST['statusPeminjaman'];
+                            $query = mysqli_query($koneksi, "UPDATE peminjaman SET bukuID = '$bukuID', tanggalPeminjaman = '$tanggalPeminjaman', tanggalPengembalian = '$tanggalPengembalian', statusPeminjaman = '$statusPeminjaman'  WHERE peminjamanID = $id");
+
+                                if ($query) {
+                                    echo '<script>alert("Tambah data berhasil");</script>';
+                                } else {
+                                    echo '<script>alert("Tambah data gagal: ' . mysqli_error($koneksi) . '");</script>';
+                                }
+                            }
+                        
+                            $query = mysqli_query($koneksi, "SELECT*FROM buku WHERE bukuID=$id");
+                            $data = mysqli_fetch_array($query);
+                        
+                        ?>
                     <div class="row mb-3">
                         <label for="namaKategori" class="form-label">Pinjam Buku</label>
                         <select class="form-control" name="bukuID" id="bukuID">
                             <?php
                                 $kat = mysqli_query($koneksi, "SELECT * FROM buku");
                                 while ($data = mysqli_fetch_array($kat)) {
-                                ?>
-                            <option value="<?= $data['bukuID'] ?>"><?= $data['judul'] ?></option>
+                                    $selected = ($data['statusPeminjaman'] == 'dikembalikan') ? 'selected' : ''; // Adjust the condition based on your needs
+                                ?> 
+                            <option value="<?= $data['bukuID'] ?>" <?= $selected ?>><?= $data['judul'] ?></option>
                             <?php
-                                }
-                                ?>
+                            }
+                            ?>
                         </select>
-
                     </div>
                     <div class="mb-3">
                         <label for="tanggalPeminjaman" class="form-label">tanggal peminjaman</label>

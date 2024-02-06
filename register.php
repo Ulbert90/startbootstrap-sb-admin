@@ -29,6 +29,7 @@ if (isset($_POST['register'])) {
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <script src="assets/js/bootstrap.min.js"></script>
     <title>login perpus palapa</title>
+    <link rel="stylesheet" href="assets/">
 </head>
 <style>
 body {
@@ -99,6 +100,9 @@ body {
         </div>
         </div>
     </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
+    <script src="js/scripts.js"></script>   
 </body>
 
 </html>
